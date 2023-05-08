@@ -24,6 +24,7 @@ final String path;
 class  CardImageState extends State <CardImage> {
     TextStyle style=TextStyle(color:Colors.white , fontSize: 20);
      bool downloading = false;
+     var selectlista=selectLista(0);
   @override
   Widget build(BuildContext context) {
    
@@ -53,7 +54,7 @@ class  CardImageState extends State <CardImage> {
             ),
                    Container(
                     width: 200,
-                    child:  ElevatedButton(onPressed: () {}, child: selectLista()
+                    child:  ElevatedButton(onPressed: () {}, child: selectlista,
                     )
                     ),
                         SizedBox(
@@ -80,7 +81,7 @@ class  CardImageState extends State <CardImage> {
     await WebImageDownloader.downloadImageFromWeb(
       _url,
       name: 'image01',
-      imageType: ImageType.png,
+      imageType:idFormat()
     );
     setState(() {
       downloading = false;
@@ -101,22 +102,25 @@ Uint8List jpegList = img.encodeJpg(pngImage );
 
 // Guardar la imagen en formato JPEG en un archivo
 // File('my_image.jpg').writeAsBytesSync(jpegList);
- await WebImageDownloader.downloadImageFromUInt8List(uInt8List: jpegList);
+ await WebImageDownloader.downloadImageFromUInt8List(uInt8List: jpegList , name: "imagen" , 
+ imageType: idFormat() );
   }
+
+ImageType idFormat(){
+  ImageType? result;
+  print("se descargara en formato " + selectlista.getindex.toString());
+switch(selectlista.getindex){
+case 0:
+result=ImageType.png;
+break;
+case 1:
+result=ImageType.jpeg;
+break;
+case 2:
+result=ImageType.webp;
+break;
+}
+return result!;
+}
 }
 
-/*
-
-import 'dart:typed_data';
-import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img;
-
-// Cargar una imagen desde un archivo
-ByteData imageBytes = await rootBundle.load('assets/images/my_image.png');
-Uint8List imageList = Uint8List.view(imageBytes.buffer);
-
-// Determinar el formato de la imagen
-img.Image image = img.decodeImage(imageList);
-String format = img.findFormat(imageList);
-
-print('El formato de la imagen es: $format'); */
