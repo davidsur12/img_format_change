@@ -21,6 +21,7 @@ class selectListaState extends State<selectLista> {
   Widget build(BuildContext context) {
     return DropdownButton<String>(
       value: formato,
+      isExpanded: true,
       icon: const Icon(Icons.arrow_downward),
       elevation: 16,
       style: const TextStyle(color: Colors.deepPurple),
