@@ -3,6 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:scaled_list/scaled_list.dart';
 import 'package:horizontal_list/horizontal_list.dart';
+import 'package:imagen_cambio_formato/screen/listSelect.dart';
+import 'package:imagen_cambio_formato/screen/card.dart';
+import 'package:imagen_cambio_formato/screen/listaHorizontal.dart';
+
+List<String> list = <String>['PNG', 'JPG'];
 
 class cargarImagen extends StatefulWidget {
   const cargarImagen({super.key});
@@ -13,10 +18,12 @@ class cargarImagen extends StatefulWidget {
 
 class _cargarImagen extends State<cargarImagen> {
   File? file;
-  List<Widget> lista = [ ];
+  List<Widget> lista = [];
   List<XFile>? image;
+
+  String formato = list.first;
   HorizontalListView? horizontalListView;
-    final List<Color> kMixedColors = [
+  final List<Color> kMixedColors = [
     Color(0xff71A5D7),
     Color(0xff72CCD4),
     Color(0xffFBAB57),
@@ -34,46 +41,34 @@ class _cargarImagen extends State<cargarImagen> {
     Category(image: "assets/5.png", name: "Pasta"),
   ];
 
-
-
-
   @override
   Widget build(BuildContext context) {
-    return Center( child:SingleChildScrollView(child:
-     (Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            btnImage(),
-           imagenes_cargadas2(),
-           //imagenes(), lista horizontal para android
-           listHorizontal(),
-        Container(
-          width: 200,
-          color: Colors.grey,
-          child: Card(color: Colors.grey, child: Column(children: [Image.asset("1.png" , width: 200,),
-          SizedBox(height: 10,),
-           Text("Comvertir A" ,style: TextStyle()) ,
-          Container(child: Text("PNG" , textAlign: TextAlign.center,), color: Colors.brown , width: double.maxFinite,)
-          ],),),),
-          ]
-        )
-        )
- 
-    )
-    );
-    
-   
+    return Center(
+        child: SingleChildScrollView(
+            child:
+                (Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      btnImage(),
+      imagenes_cargadas2(),
+      //imagenes(), lista horizontal para android
+      // listHorizontal(),
+      listaHorizontal(lista),
+      //https://pub.dev/packages/image_downloader_web
+      //https://pub.dev/packages/image/example
+
+      
+    ]))));
   }
- imagenes_cargadas2() {
-    if ( image==null) {
-   
-     return Text("NO SELECIONASTE NINGUNA IMAGEN");
+
+  imagenes_cargadas2() {
+    if (image == null) {
+      return Text("NO SELECIONASTE NINGUNA IMAGEN");
     } else {
-      for (int i = 0; i < image!.length ; i++) {
+      for (int i = 0; i < image!.length; i++) {
         String path = image![i].path;
-        //lista.add(Text(path));
-        lista.add(Image.network(path , width: 200,));
-        print("archivos cargados" + lista[i].toString() );
+        CardImage car=CardImage(path);
+        car.image=image![i];
+        lista.add(car);
+        print("archivos cargados" + lista[i].toString());
       }
 
       return Text("");
@@ -81,17 +76,19 @@ class _cargarImagen extends State<cargarImagen> {
      return Column(
         children: lista,
       );*/
-      
     }
   }
-  Stream<Widget> imagenes_cargadas()async* {
+
+  Stream<Widget> imagenes_cargadas() async* {
     if (image!.length == 0) {
       //lista.add(Text("fds"));
-     yield Text("NO SELECIONASTE NINGUNA IMAGEN");
+      yield Text("NO SELECIONASTE NINGUNA IMAGEN");
     } else {
       for (int i = 0; i < image!.length - 1; i++) {
         String path = image![i].path;
-        lista.add(Text(i.toString()));
+        //lista.add(Text(i.toString()));
+        //lista.add(card(path));
+        lista.add(CardImage(path));
         print(lista[i]);
       }
 
@@ -112,7 +109,7 @@ class _cargarImagen extends State<cargarImagen> {
             // print(" total archivos" + image.length.toString());
             //imagenes_cargadas();
             print(image!.length.toString());
-            image=image;
+            image = image;
           } else {
             print("esta vacio");
           }
@@ -129,67 +126,37 @@ class _cargarImagen extends State<cargarImagen> {
         child: Text("Cargar imagen"));
   }
 
-
-Widget listHorizontal(){
-if(lista == null || lista.length == 0){
-  return Text("vacio");
-}
-
-
-  horizontalListView= HorizontalListView(
-   // width: double.maxFinite, //Width of widget
-    width: 1000, 
-    height: 200, //Height of widget
-    list: lista,//[Image.asset("1.png") , Text(" "), Image.asset("2.png") , Image.asset("3.png") , Image.asset("4.png") , Image.asset("5.png")], //List of widget
-    iconNext: Icon(Icons.arrow_forward_ios), // Icon for button next
-    iconPrevious: Icon(Icons.arrow_back_ios), // Icon for button previous
-    curveAnimation: Curves.decelerate, //Curve for animation
-    durationAnimation: Duration(milliseconds: 300), //Duration of animation
-    enableManualScroll: true, //Enable manual scroll
-    onNextPressed: () { //On button next pressed
-      print('On next pressed');
-      print("size de lista " + lista.length.toString());
-    },
-    onPreviousPressed: () { //On button next pressed
-      print('On previous pressed');
-    },
-);
-return horizontalListView!;
-}
-  Widget imagenes(){
-
-    
- return Center(
-            child: ScaledList(
-                itemCount: categories.length,
-                itemColor: (index) {
-                  return kMixedColors[index % kMixedColors.length];
-                },
-                itemBuilder: (index, selectedIndex) {
-                  final category = categories[index];
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: selectedIndex == index ? 100 : 80,
-                        child: Image.asset(category.image),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        category.name,
-                        style: TextStyle(
-            color: Colors.white,
-            fontSize: selectedIndex == index ? 25 : 20),
-                      )
-                    ],
-                  );
-                },
+  Widget imagenes() {
+    return Center(
+      child: ScaledList(
+        itemCount: categories.length,
+        itemColor: (index) {
+          return kMixedColors[index % kMixedColors.length];
+        },
+        itemBuilder: (index, selectedIndex) {
+          final category = categories[index];
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                height: selectedIndex == index ? 100 : 80,
+                child: Image.asset(category.image),
               ),
-          
-        );
+              SizedBox(height: 5),
+              Text(
+                category.name,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: selectedIndex == index ? 25 : 20),
+              )
+            ],
+          );
+        },
+      ),
+    );
   }
-
 }
+
 class Category {
   final String image;
   final String name;

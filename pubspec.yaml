@@ -31,6 +31,8 @@ dependencies:
   image_picker: ^0.8.7+1
   scaled_list: ^2.0.0
   horizontal_list: ^0.0.7
+  image_downloader_web: ^2.0.2
+  image: ^4.0.17
   flutter:
     sdk: flutter
 
